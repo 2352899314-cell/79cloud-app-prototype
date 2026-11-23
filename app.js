@@ -1,0 +1,10 @@
+const pages={};let current='buy01',stack=[],form={};const scene=document.querySelector('#scene'),phone=document.querySelector('#phone');
+function addPage(id,filename,width,height,setup){pages[id]={filename,width,height,setup}}
+function go(id){if(!pages[id]){toast('该功能暂为演示');return}if(id!==current)stack.push(current);current=id;render();phone.scrollTop=0}
+function back(){current=stack.pop()||'buy01';render();phone.scrollTop=0}
+function toast(s){document.querySelector('.toast')?.remove();let d=document.createElement('div');d.className='toast';d.textContent=s;document.body.append(d);setTimeout(()=>d.remove(),2000)}
+function dialog(title,msg,cb){let e=document.createElement('div');e.className='overlay';e.innerHTML=`<div class="dialog"><h3></h3><p></p><button>确定</button><div style="clear:both"></div></div>`;e.querySelector('h3').textContent=title;e.querySelector('p').textContent=msg;document.body.append(e);e.querySelector('button').onclick=()=>{e.remove();cb?.()};e.onclick=x=>{if(x.target===e)e.remove()}}
+function box(x,y,w,h,action,label){let b=document.createElement('button'),p=pages[current],H=p.height*240/p.width;b.className='hot';b.setAttribute('aria-label',label||'操作');Object.assign(b.style,{left:x/240*100+'%',top:y/H*100+'%',width:w/240*100+'%',height:h/H*100+'%'});b.onclick=action;scene.append(b)}
+function input(x,y,w,h,key,placeholder,type='text'){let e=document.createElement('input'),p=pages[current],H=p.height*240/p.width;e.className='entry';e.type=type;e.placeholder=placeholder;e.value=form[key]||'';e.setAttribute('aria-label',placeholder);Object.assign(e.style,{left:x/240*100+'%',top:y/H*100+'%',width:w/240*100+'%',height:h/H*100+'%'});e.oninput=()=>form[key]=e.value;scene.append(e)}
+function nav(){const p=pages[current],y=p.height*240/p.width-55;[['discover01','发现'],['service01','服务'],['buy01','购车'],['shop01','商城'],['my01','我的']].forEach(([id,label],i)=>box(i*48,y,48,55,()=>go(id),label))}
+function render(){const p=pages[current];scene.innerHTML='';let im=document.createElement('img');im.src='assets/new/'+p.filename.split('/').map(encodeURIComponent).join('/');im.alt=p.filename.replace('.jpg','');scene.append(im);p.setup();}
