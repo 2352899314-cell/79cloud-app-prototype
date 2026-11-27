@@ -1,12 +1,11 @@
-let page=0,stack=[],data={},agreed=false,code='';const scene=document.querySelector('#scene'),phone=document.querySelector('#phone');
-function go(n){if(n!==page)stack.push(page);if(n===15&&page!==15)code='';page=n;render();phone.scrollTop=0}function back(){page=stack.pop()??0;render();phone.scrollTop=0}function toast(s){document.querySelector('.toast')?.remove();let e=document.createElement('div');e.className='toast';e.textContent=s;document.body.append(e);setTimeout(()=>e.remove(),2200)}
+let page=45,stack=[],data={},agreed=false,code='';const scene=document.querySelector('#scene'),phone=document.querySelector('#phone');
+function go(n){if(n!==page)stack.push(page);if(n===15&&page!==15)code='';page=n;render();phone.scrollTop=0}function back(){page=stack.pop()??45;render();phone.scrollTop=0}function toast(s){document.querySelector('.toast')?.remove();let e=document.createElement('div');e.className='toast';e.textContent=s;document.body.append(e);setTimeout(()=>e.remove(),2200)}
 function modal(title,text,cb){let e=document.createElement('div');e.className='overlay';e.innerHTML='<div class="dialog"><h3></h3><p></p><div class="actions"><button class="cancel">取消</button><button class="ok">确定</button></div></div>';e.querySelector('h3').textContent=title;e.querySelector('p').textContent=text;document.body.append(e);e.querySelector('.cancel').onclick=()=>e.remove();e.querySelector('.ok').onclick=()=>{e.remove();cb?.()};e.onclick=x=>{if(x.target===e)e.remove()}}
-function menu(){let e=document.createElement('div');e.className='overlay';e.innerHTML='<div class="dialog"><h3>工作台</h3><p>请选择要查看的业务</p><div class="menu"><button data-page="4">试驾管理</button><button data-page="9">订单管理</button><button data-page="13">扫码核销</button><button data-page="17">资金管理</button><button data-page="21">商户入驻</button><button data-page="0">我的</button><button class="close">关闭</button></div></div>';document.body.append(e);e.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{e.remove();go(+b.dataset.page)});e.querySelector('.close').onclick=()=>e.remove();e.onclick=x=>{if(x.target===e)e.remove()}}
 function box(x,y,w,h,fn,label){let p=pages[page],H=p.height*220/p.width,b=document.createElement('button');b.className='hot';b.setAttribute('aria-label',label||'操作');Object.assign(b.style,{left:x/220*100+'%',top:y/H*100+'%',width:w/220*100+'%',height:h/H*100+'%'});b.onclick=fn;scene.append(b)}
 function input(x,y,w,h,key,placeholder,type='text'){let p=pages[page],H=p.height*220/p.width,e=document.createElement('input');e.className='entry';e.type=type;e.value=data[key]||'';e.placeholder=placeholder;e.setAttribute('aria-label',placeholder);Object.assign(e.style,{left:x/220*100+'%',top:y/H*100+'%',width:w/220*100+'%',height:h/H*100+'%'});e.oninput=()=>data[key]=e.value;scene.append(e)}
-function foot(){let p=pages[page],y=p.height*220/p.width-55;box(0,y,75,55,menu,'工作台');box(75,y,75,55,()=>go(13),'扫码核销');box(150,y,70,55,()=>go(0),'我的')}
+function foot(){let p=pages[page],y=p.height*220/p.width-55;box(0,y,75,55,()=>go(45),'工作台');box(75,y,75,55,()=>go(13),'扫码核销');box(150,y,70,55,()=>go(0),'我的')}
 function next(y,n,label='下一步'){box(8,y,204,35,()=>go(n),label)}function safe(y,n,label){box(8,y,204,35,()=>modal('模拟操作','这是交互演示，不会提交资料或发起真实业务。',()=>go(n)),label)}
-function render(){let p=pages[page];scene.innerHTML='';let img=document.createElement('img');img.src='assets/'+encodeURIComponent(p.file);img.alt=p.file.replace('.jpg','');scene.append(img);if(page!==0)box(0,28,40,40,back,'返回');switch(page){
+function render(){let p=pages[page];scene.innerHTML='';let img=document.createElement('img');img.src='assets/'+encodeURIComponent(p.file);img.alt=p.file.replace('.jpg','');scene.append(img);if(page!==0&&page!==45)box(0,28,40,40,back,'返回');switch(page){
 case 0:box(10,138,200,30,()=>go(17),'资金管理');box(10,170,200,28,()=>go(2),'店员管理');box(10,200,200,30,()=>go(1),'门店设置');box(160,30,50,38,()=>go(1),'门店设置');foot();break;
 case 1:box(120,280,90,30,()=>go(3),'门店地址');box(10,350,200,35,()=>{toast('设置已保存（演示）');back()},'保存');break;
 case 2:input(30,67,155,25,'staffSearch','输入关键词');box(145,110,60,30,()=>toast('添加店员演示'),'添加店员');box(5,145,205,310,()=>toast('店员信息演示'),'查看店员');break;
@@ -29,7 +28,7 @@ case 15:{
  const key=n=>{if(code.length>=6)return;code+=n;update();if(code.length===6)setTimeout(()=>{if(page===15&&code.length===6)go(14)},250)};
  [[1,2,3],[4,5,6],[7,8,9]].forEach((row,r)=>row.forEach((n,c)=>box(c*73,310+r*37,73,37,()=>key(String(n)),'数字'+n)));
  box(73,421,73,37,()=>key('0'),'数字0');box(146,421,74,37,()=>{code=code.slice(0,-1);update()},'删除一位');box(0,60,108,30,()=>go(13),'扫码核销');break;}
-case 16:next(375,0,'返回工作台');break;
+case 16:next(375,45,'返回工作台');break;
 case 17:box(12,187,94,35,()=>go(22),'支付分账');box(110,187,98,35,()=>go(18),'提现');box(60,225,105,28,()=>go(20),'提现明细');box(150,380,60,30,()=>go(21),'查看支付详情');box(10,480,205,155,()=>go(40),'查看资金明细');box(10,155,100,30,()=>go(42),'冻结货款');foot();break;
 case 18:input(27,144,175,40,'amount','输入提现金额','number');safe(415,19,'确认提现');break;
 case 19:box(165,30,48,30,()=>go(17),'完成');next(430,17,'返回资金管理');break;
@@ -57,6 +56,7 @@ case 41:next(415,17,'返回资金管理');break;
 case 42:next(415,17,'我知道了');break;
 case 43:safe(415,30,'确认提交');break;
 case 44:safe(415,31,'确认绑定');break;
+case 45:box(10,127,98,42,()=>go(9),'今日订单');box(112,127,98,42,()=>go(10),'待备货');box(10,170,98,42,()=>go(11),'待核销');box(112,170,98,42,()=>go(17),'今日收入');box(12,221,35,42,()=>go(9),'订单');box(47,221,30,42,()=>go(4),'试驾');box(77,221,30,42,()=>toast('维修功能暂无页面'),'维修');box(107,221,30,42,()=>go(17),'资金');box(137,221,30,42,()=>toast('活动功能暂无页面'),'活动');box(167,221,40,42,()=>toast('后台功能暂无页面'),'后台');box(10,270,200,26,()=>go(10),'待备货订单');box(10,296,200,26,()=>go(11),'待核销到店提车');box(10,322,200,26,()=>go(4),'待电话邀约试驾');box(10,348,200,28,()=>go(17),'待到账金额');foot();break;
 }}
 render();
 
